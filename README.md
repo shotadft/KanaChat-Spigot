@@ -1,5 +1,6 @@
 NihongoChat
 ===========
+[![Build Status](http://ci.codearts.jp/job/NihongoChat/badge/icon)](http://ci.codearts.jp/job/NihongoChat/)
 
 NihongoChat is plugin for bukkit:
 Automatic conversion chat text to Kana and Kanji.
