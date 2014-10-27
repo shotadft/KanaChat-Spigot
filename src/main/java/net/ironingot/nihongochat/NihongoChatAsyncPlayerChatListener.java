@@ -61,13 +61,20 @@ public class NihongoChatAsyncPlayerChatListener implements Listener {
             }
 
             StringBuilder stringBuilder = new StringBuilder();
+            String kanjiMessage = kanaMessage;
+
             if (plugin.getConfigHandler().getUserKanjiConversion(player.getName()).equals(Boolean.TRUE)) {
-                stringBuilder.append(KanaKanjiTranslator.translate(kanaMessage));
-            } else {
-                stringBuilder.append(kanaMessage);
+                kanjiMessage = KanaKanjiTranslator.translate(kanaMessage);
             }
 
+            if (kanjiMessage.length() > 0) {
+                stringBuilder.append(kanjiMessage);
+            } else {
+                stringBuilder.append(kanaMessage);
+            } 
+
             stringBuilder.append(ChatColor.GRAY).append(" ").append(message);
+
             event.setMessage(stringBuilder.toString());
         } else {
             logger.info("Matched.");

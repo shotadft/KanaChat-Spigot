@@ -24,11 +24,6 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>org.json</groupId>
-      <artifactId>json</artifactId>
-      <version>20140107</version>
-    </dependency>
   </dependencies>
 
   <build>
@@ -49,27 +44,6 @@
           <target>1.6</target>
           <encoding>UTF-8</encoding>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>1.7.1</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <minimizeJar>true</minimizeJar>
-              <artifactSet>
-                <includes>
-                  <include>org.json:json</include>
-                </includes>
-              </artifactSet>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>

@@ -10,8 +10,13 @@ import java.net.URLEncoder;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 
-import org.json.JSONArray;
-import org.json.JSONException;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import net.ironingot.nihongochat.NihongoChat;
 
 public class GoogleTranslatorAPI {
     private static final String baseURL = "http://www.google.com/transliterate";
@@ -30,36 +35,41 @@ public class GoogleTranslatorAPI {
 
    private static String pickupFirstCandidate(String response) {
         StringBuilder stringBuilder = new StringBuilder();
-        
-        try {
-            JSONArray responseArray = new JSONArray(response);
+        JSONParser parser = new JSONParser();
+        NihongoChat.logger.info("Response: " + response);
 
-            for (int id = 0; id < responseArray.length(); id++) {
+        try {
+            JSONArray responseArray = (JSONArray)parser.parse(response);
+
+            for (int id = 0; id < responseArray.size(); id++) {
                 String partString = "";
                 try {
-                    JSONArray partArray = responseArray.getJSONArray(id);
-                    partString = partArray.getString(0);
-                    partString = partArray.getJSONArray(1).getString(0);
-                } catch (JSONException e) {
+                    JSONArray partArray = (JSONArray)responseArray.get(id);
+                    partString = (String)partArray.get(0);
+                    partString = (String)((JSONArray)partArray.get(1)).get(0);
+                } catch (IndexOutOfBoundsException e) {
+                    e.printStackTrace();
                 }
+                NihongoChat.logger.info("partString: " + partString);
                 stringBuilder.append(partString);
             }
-        } catch (JSONException e) {
+        } catch (ParseException e) {
             e.printStackTrace();
         }
 
         if (stringBuilder.length() == 0) {
-            return response;
+            return "";
         }
 
         return stringBuilder.toString();
     }
-    
+
     private static String callWebAPI(String urlString) {
         HttpURLConnection connection = null;
         BufferedReader bufferedReader = null;
         StringBuilder stringBuilder = new StringBuilder();
 
+        NihongoChat.logger.info("urlString: " + urlString);
         try {
             URL url = new URL(urlString);
             connection = (HttpURLConnection) url.openConnection();
