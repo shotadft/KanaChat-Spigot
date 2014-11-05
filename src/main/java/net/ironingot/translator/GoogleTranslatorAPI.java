@@ -36,7 +36,6 @@ public class GoogleTranslatorAPI {
    private static String pickupFirstCandidate(String response) {
         StringBuilder stringBuilder = new StringBuilder();
         JSONParser parser = new JSONParser();
-        NihongoChat.logger.info("Response: " + response);
 
         try {
             JSONArray responseArray = (JSONArray)parser.parse(response);
@@ -50,7 +49,6 @@ public class GoogleTranslatorAPI {
                 } catch (IndexOutOfBoundsException e) {
                     e.printStackTrace();
                 }
-                NihongoChat.logger.info("partString: " + partString);
                 stringBuilder.append(partString);
             }
         } catch (ParseException e) {
@@ -69,7 +67,6 @@ public class GoogleTranslatorAPI {
         BufferedReader bufferedReader = null;
         StringBuilder stringBuilder = new StringBuilder();
 
-        NihongoChat.logger.info("urlString: " + urlString);
         try {
             URL url = new URL(urlString);
             connection = (HttpURLConnection) url.openConnection();
