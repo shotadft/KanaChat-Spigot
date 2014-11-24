@@ -18,8 +18,11 @@ public class NihongoChatAsyncPlayerChatListener implements Listener {
     public NihongoChat plugin;
 
     private static final String avoidingString = 
-            "[^\u0020-\u007E]|\u00a7|u00a74u00a75u00a73u00a74v|^http|^[A-Z#!<>]";
+            "[^\u0020-\u007E]|\u00a7|u00a74u00a75u00a73u00a74v|^http|^[A-Z]";
     private static final Pattern avoidingPattern = Pattern.compile(avoidingString);
+
+    private static final String prefixString = "([#GLOBAL#|>])(.*)";
+    private static final Pattern prefixPattern = Pattern.compile(prefixString);
 
     public NihongoChatAsyncPlayerChatListener(NihongoChat plugin) {
         this.plugin = plugin;
@@ -29,6 +32,7 @@ public class NihongoChatAsyncPlayerChatListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
+        String prefix = "";
         String message = event.getMessage();
         Player player = event.getPlayer();
 
@@ -36,16 +40,21 @@ public class NihongoChatAsyncPlayerChatListener implements Listener {
             return;
         }
 
+        Matcher prefixMatcher = prefixPattern.matcher(message);
+        if (prefixMatcher.find(0)) {
+            prefix = prefixMatcher.group(1);
+            message = prefixMatcher.group(2);
+        }
+
         if (plugin.getConfigHandler().getUserMode(player.getName()).equals(Boolean.FALSE)) {
             return;
         }
 
-        Matcher matcher = avoidingPattern.matcher(message);
-        if (!matcher.find(0)) {
+        Matcher avoidingMatcher = avoidingPattern.matcher(message);
+        if (!avoidingMatcher.find(0)) {
             Kana kana = new Kana();
             kana.setLine(message);
             kana.convert();
-
             String kanaMessage = kana.getLine();
 
             if (message.equals(kanaMessage)) {
@@ -54,6 +63,7 @@ public class NihongoChatAsyncPlayerChatListener implements Listener {
 
             StringBuilder stringBuilder = new StringBuilder();
             String kanjiMessage = kanaMessage;
+            stringBuilder.append(prefix);
 
             if (plugin.getConfigHandler().getUserKanjiConversion(player.getName()).equals(Boolean.TRUE)) {
                 kanjiMessage = KanaKanjiTranslator.translate(kanaMessage);
