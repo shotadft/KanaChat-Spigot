@@ -17,11 +17,7 @@ import net.ironingot.translator.KanaKanjiTranslator;
 public class NihongoChatAsyncPlayerChatListener implements Listener {
     public NihongoChat plugin;
 
-    private static final String avoidingString = 
-            "[^\u0020-\u007E]|\u00a7|u00a74u00a75u00a73u00a74v|^http|^[A-Z]";
-    private static final Pattern avoidingPattern = Pattern.compile(avoidingString);
-
-    private static final String prefixString = "([#GLOBAL#|>])(.*)";
+    private static final String prefixString = "^([#GLOBAL#|>]+)(.*)";
     private static final Pattern prefixPattern = Pattern.compile(prefixString);
 
     public NihongoChatAsyncPlayerChatListener(NihongoChat plugin) {
@@ -46,38 +42,54 @@ public class NihongoChatAsyncPlayerChatListener implements Listener {
             message = prefixMatcher.group(2);
         }
 
-        if (plugin.getConfigHandler().getUserMode(player.getName()).equals(Boolean.FALSE)) {
+        Boolean toKana = plugin.getConfigHandler().getUserMode(player.getName());
+        Boolean toKanji = plugin.getConfigHandler().getUserKanjiConversion(player.getName());
+        String kanaMessage = ConvertMessage(message, toKana, toKanji);
+
+        if (kanaMessage.equals(message)) {
             return;
         }
 
-        Matcher avoidingMatcher = avoidingPattern.matcher(message);
-        if (!avoidingMatcher.find(0)) {
-            Kana kana = new Kana();
-            kana.setLine(message);
-            kana.convert();
-            String kanaMessage = kana.getLine();
+        StringBuilder stringBuilder = new StringBuilder();
+        String kanjiMessage = kanaMessage;
+        stringBuilder.append(prefix);
+        stringBuilder.append(kanaMessage);
+        stringBuilder.append(ChatColor.GRAY).append(" ").append(message);
+        event.setMessage(stringBuilder.toString());
+    }
 
-            if (message.equals(kanaMessage)) {
-                return;
+    public String ConvertMessage(String message, Boolean toKana, Boolean toKanji)
+    {
+        StringBuilder messageBuilder = new StringBuilder();
+
+        if (!toKana.equals(Boolean.TRUE))
+            return message;
+
+        for (String word: message.split(" "))
+        {
+            if (messageBuilder.length() > 0)
+            {
+                messageBuilder.append(" ");
             }
 
-            StringBuilder stringBuilder = new StringBuilder();
-            String kanjiMessage = kanaMessage;
-            stringBuilder.append(prefix);
-
-            if (plugin.getConfigHandler().getUserKanjiConversion(player.getName()).equals(Boolean.TRUE)) {
-                kanjiMessage = KanaKanjiTranslator.translate(kanaMessage);
-            }
-
-            if (kanjiMessage.length() > 0) {
-                stringBuilder.append(kanjiMessage);
+            if (word.matches("[^\u0020-\u007E]|\u00a7|u00a74u00a75u00a73u00a74v|^http|^[A-Z]"))
+            {
+                messageBuilder.append(word);
             } else {
-                stringBuilder.append(kanaMessage);
-            } 
+                Kana kana = new Kana();
+                kana.setLine(word);
+                kana.convert();
+                String kanaWord = kana.getLine();
 
-            stringBuilder.append(ChatColor.GRAY).append(" ").append(message);
+                if (toKana.equals(Boolean.TRUE) && !kanaWord.matches("[A-Za-z]"))
+                {
+                    kanaWord = KanaKanjiTranslator.translate(kanaWord);
+                }
 
-            event.setMessage(stringBuilder.toString());
+                messageBuilder.append(kanaWord);
+            }
         }
+
+        return messageBuilder.toString();
     }
 }

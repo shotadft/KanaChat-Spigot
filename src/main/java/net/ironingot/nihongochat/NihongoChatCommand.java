@@ -41,9 +41,9 @@ public class NihongoChatCommand implements CommandExecutor {
             }
 
             if (plugin.getConfigHandler().getUserKanjiConversion(sender.getName())) {
-                sender.sendMessage(ChatColor.GOLD + pluginName + " Kanji conversion is active.");
+                sender.sendMessage(ChatColor.GOLD + pluginName + " Kanji conversion is enabled.");
             } else {
-                sender.sendMessage(ChatColor.GOLD + pluginName + " Kanji conversion is inactive.");
+                sender.sendMessage(ChatColor.GOLD + pluginName + " Kanji conversion is disabled.");
             }
             return true;
         }
@@ -58,9 +58,9 @@ public class NihongoChatCommand implements CommandExecutor {
         }
 
         if (plugin.getConfigHandler().getUserMode(sender.getName()) == Boolean.TRUE) {
-            sender.sendMessage(ChatColor.GOLD + pluginName + " is active.");
+            sender.sendMessage(ChatColor.GOLD + pluginName + " is enabled.");
         } else {
-            sender.sendMessage(ChatColor.GOLD + pluginName + " is inactive.");
+            sender.sendMessage(ChatColor.GOLD + pluginName + " is disabled.");
         }
         return true;
     }
