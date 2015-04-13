@@ -17,8 +17,12 @@ import net.ironingot.translator.KanaKanjiTranslator;
 public class NihongoChatAsyncPlayerChatListener implements Listener {
     public NihongoChat plugin;
 
-    private static final String prefixString = "^([#GLOBAL#|>]+)(.*)";
-    private static final Pattern prefixPattern = Pattern.compile(prefixString);
+    private static final String excludeMatchString = "[^\u0020-\u007E]|\u00a7|u00a74u00a75u00a73u00a74v|^http|^[A-Z]";
+    private static final Pattern excludePattern = Pattern.compile(excludeMatchString);
+
+
+    private static final String prefixMatchString = "^([#GLOBAL#|>]+)(.*)";
+    private static final Pattern prefixPattern = Pattern.compile(prefixMatchString);
 
     public NihongoChatAsyncPlayerChatListener(NihongoChat plugin) {
         this.plugin = plugin;
@@ -26,13 +30,17 @@ public class NihongoChatAsyncPlayerChatListener implements Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOW)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         String prefix = "";
         String message = event.getMessage();
         Player player = event.getPlayer();
 
         if (message.startsWith("/")) {
+            return;
+        }
+
+        if (!message.matches("^[A-Za-z]")) {
             return;
         }
 
@@ -52,9 +60,12 @@ public class NihongoChatAsyncPlayerChatListener implements Listener {
 
         StringBuilder stringBuilder = new StringBuilder();
         String kanjiMessage = kanaMessage;
-        stringBuilder.append(prefix);
-        stringBuilder.append(kanaMessage);
-        stringBuilder.append(ChatColor.GRAY).append(" ").append(message);
+
+        if (!prefix.equals("")) {
+            stringBuilder.append(prefix).append(" ");
+        }
+        stringBuilder.append(kanaMessage).append(" ").append(ChatColor.GRAY).append(message);
+
         event.setMessage(stringBuilder.toString());
     }
 
@@ -72,7 +83,8 @@ public class NihongoChatAsyncPlayerChatListener implements Listener {
                 messageBuilder.append(" ");
             }
 
-            if (word.matches("[^\u0020-\u007E]|\u00a7|u00a74u00a75u00a73u00a74v|^http|^[A-Z]"))
+            Matcher excludeMatcher = excludePattern.matcher(word);
+            if (excludeMatcher.find())
             {
                 messageBuilder.append(word);
             } else {
@@ -80,10 +92,13 @@ public class NihongoChatAsyncPlayerChatListener implements Listener {
                 kana.setLine(word);
                 kana.convert();
                 String kanaWord = kana.getLine();
+                plugin.logger.info("word = [" + word + "]");
+                plugin.logger.info("kanaWord = [" + kanaWord + "]");
 
-                if (toKana.equals(Boolean.TRUE) && !kanaWord.matches("[A-Za-z]"))
+                if (toKanji.equals(Boolean.TRUE) && kanaWord.matches("[A-Za-z]"))
                 {
                     kanaWord = KanaKanjiTranslator.translate(kanaWord);
+                    plugin.logger.info("kanjiWord = [" + kanaWord + "]");
                 }
 
                 messageBuilder.append(kanaWord);

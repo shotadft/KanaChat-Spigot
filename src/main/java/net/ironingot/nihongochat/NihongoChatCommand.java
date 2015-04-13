@@ -33,10 +33,10 @@ public class NihongoChatCommand implements CommandExecutor {
         }
 
         if (command != null && command.equals("kanji")) {
-            if (option.equals("on") || option.equals("true")) {
+            if (option != null && (option.equals("on") || option.equals("true"))) {
                 plugin.getConfigHandler().setUserKanjiConversion(sender.getName(), Boolean.TRUE);
             }
-            if (option.equals("off") || option.equals("false")) {
+            if (option != null && (option.equals("off") || option.equals("false"))) {
                 plugin.getConfigHandler().setUserKanjiConversion(sender.getName(), Boolean.FALSE);
             }
 
