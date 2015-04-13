@@ -40,7 +40,7 @@ public class NihongoChatAsyncPlayerChatListener implements Listener {
             return;
         }
 
-        if (!message.matches("^[A-Za-z]")) {
+        if (!message.matches("^[A-Za-z].*")) {
             return;
         }
 
@@ -95,7 +95,7 @@ public class NihongoChatAsyncPlayerChatListener implements Listener {
                 plugin.logger.info("word = [" + word + "]");
                 plugin.logger.info("kanaWord = [" + kanaWord + "]");
 
-                if (toKanji.equals(Boolean.TRUE) && kanaWord.matches("[A-Za-z]"))
+                if (toKanji.equals(Boolean.TRUE) && !kanaWord.matches("^[A-Za-z].*"))
                 {
                     kanaWord = KanaKanjiTranslator.translate(kanaWord);
                     plugin.logger.info("kanjiWord = [" + kanaWord + "]");
