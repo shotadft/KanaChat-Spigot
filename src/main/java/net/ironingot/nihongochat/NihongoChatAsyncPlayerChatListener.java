@@ -92,13 +92,10 @@ public class NihongoChatAsyncPlayerChatListener implements Listener {
                 kana.setLine(word);
                 kana.convert();
                 String kanaWord = kana.getLine();
-                plugin.logger.info("word = [" + word + "]");
-                plugin.logger.info("kanaWord = [" + kanaWord + "]");
 
                 if (toKanji.equals(Boolean.TRUE) && !kanaWord.matches("^[A-Za-z].*"))
                 {
                     kanaWord = KanaKanjiTranslator.translate(kanaWord);
-                    plugin.logger.info("kanjiWord = [" + kanaWord + "]");
                 }
 
                 messageBuilder.append(kanaWord);
