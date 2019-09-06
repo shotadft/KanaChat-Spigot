@@ -7,7 +7,7 @@ KanaChat
 
 KanaChat is plugin for bukkit that automatic conversion chat text to Kana and Kanji.
 
-[ScreenShot](http://i.imgur.com/z4vOY4H)
+![ScreenShot](https://i.imgur.com/z4vOY4H.png)
 
 Compilation
 -----------
