@@ -1,7 +1,6 @@
 package net.ironingot.translator;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -11,26 +10,29 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import net.ironingot.nihongochat.NihongoChat;
-
 public class GoogleTranslatorAPI {
     private static final String baseURL = "http://www.google.com/transliterate";
+    private static final String from = "jp-Hira";
+    private static final String to = "jp";
     private static final String codec = "UTF-8";
 
+    private static String makeURLString(String text) {
+        return baseURL + "?langpair=" + from + "|" + to + "&text=" + text;
+    }
+
     public static String translate(String text, String from, String to) {
-        String encodedText = null;
+        String result = text;
         try {
-            encodedText = URLEncoder.encode(text, codec);
+            String encodedText = URLEncoder.encode(text, codec);
+            String response = callWebAPI(makeURLString(encodedText));
+            result = pickupFirstCandidate(response);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        String urlString = baseURL + "?langpair=" + from + "|" + to + "&text=" + encodedText;
-        return pickupFirstCandidate(callWebAPI(urlString));
+        return result;
    }
 
    private static String pickupFirstCandidate(String response) {
@@ -54,11 +56,6 @@ public class GoogleTranslatorAPI {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-        if (stringBuilder.length() == 0) {
-            return "";
-        }
-
         return stringBuilder.toString();
     }
 
@@ -86,7 +83,7 @@ public class GoogleTranslatorAPI {
             e.printStackTrace();
         } finally {
             try {
-                if (bufferedReader == null) {
+                if (bufferedReader != null) {
                     bufferedReader.close();
                 }
             } catch (IOException e) {
