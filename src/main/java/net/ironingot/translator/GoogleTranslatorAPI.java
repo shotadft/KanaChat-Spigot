@@ -15,15 +15,15 @@ import org.json.simple.parser.ParseException;
 
 public class GoogleTranslatorAPI {
     private static final String baseURL = "http://www.google.com/transliterate";
-    private static final String from = "jp-Hira";
-    private static final String to = "jp";
+    private static final String from = "ja-Hira";
+    private static final String to = "ja";
     private static final String codec = "UTF-8";
 
     private static String makeURLString(String text) {
         return baseURL + "?langpair=" + from + "|" + to + "&text=" + text;
     }
 
-    public static String translate(String text, String from, String to) {
+    public static String translate(String text) {
         String result = text;
         try {
             String encodedText = URLEncoder.encode(text, codec);

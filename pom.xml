@@ -14,6 +14,10 @@
       <id>spigot-repo</id>
       <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
     </repository>
+    <repository>
+      <id>mvnrepository</id>
+      <url>https://mvnrepository.com/</url>
+    </repository>
   </repositories>
 
   <dependencies>
@@ -23,6 +27,11 @@
       <version>1.12.2-R0.1-SNAPSHOT</version>
       <type>jar</type>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-collections4</artifactId>
+      <version>4.0</version>
     </dependency>
   </dependencies>
 
@@ -45,6 +54,35 @@
           <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.4.3</version>
+        <configuration>
+          <minimizeJar>true</minimizeJar>
+          <artifactSet>
+            <includes>
+              <include>org.apache.commons:*</include>
+            </includes>
+          </artifactSet>
+          <relocations>
+            <relocation>
+              <pattern>org.apache.commons</pattern>
+              <shadedPattern>net.ironingot.nihongochat.org.apache.commons</shadedPattern>
+            </relocation>
+          </relocations>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
 </project>
