@@ -12,8 +12,16 @@ public class ConfigHandler {
 
     public ConfigHandler(File configFile) {
         this.configFile = configFile;
-        this.config = YamlConfiguration.loadConfiguration(configFile);
 
+        if (!configFile.exists()) {
+            try {
+                configFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        this.config = YamlConfiguration.loadConfiguration(configFile);
         load();
     }
 
@@ -38,45 +46,20 @@ public class ConfigHandler {
     }
 
     public Boolean getUserKanjiConversion(String name) {
-        String path = "user." + name + ".kanji";
-        Boolean usingKanjiConversion = (Boolean)config.get(path);
-
-        if (usingKanjiConversion == null) {
-            usingKanjiConversion = Boolean.TRUE;
-            config.set(path, usingKanjiConversion);
-
-            save();
-        }
-
-        return usingKanjiConversion;
+        return (Boolean)config.get("user." + name + ".kanji", Boolean.TRUE);
     }
 
     public void setUserKanjiConversion(String name, Boolean value) {
-        String path = "user." + name + ".kanji";
-        config.set(path, value);
-
+        config.set("user." + name + ".kanji", value);
         save();
     }
 
-
     public Boolean getUserMode(String name) {
-        String path = "user." + name + ".nihongochat";
-        Boolean userMode = (Boolean)config.get(path);
-
-        if (userMode == null) {
-            userMode = Boolean.TRUE;
-            config.set(path, userMode);
-
-            save();
-        }
-
-        return userMode;
+        return (Boolean)config.get("user." + name + ".nihongochat", Boolean.TRUE);
     }
 
     public void setUserMode(String name, Boolean value) {
-        String path = "user." + name + ".nihongochat";
-        config.set(path, value);
-
+        config.set("user." + name + ".nihongochat", value);
         save();
     }
 }

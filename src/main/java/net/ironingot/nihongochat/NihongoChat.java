@@ -1,39 +1,30 @@
 package net.ironingot.nihongochat;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.logging.Logger;
+import java.util.Arrays;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.command.PluginCommand;
 
 public class NihongoChat extends JavaPlugin {
     public static final Logger logger = Logger.getLogger("Minecraft");
     private ConfigHandler configHandler;
 
     public void onEnable() {
-        new NihongoChatAsyncPlayerChatListener(this);
+        this.configHandler = new ConfigHandler(new File(this.getDataFolder(), "config.yml"));
 
-        loadConfig();
-        getCommand("nihongochat").setExecutor(new NihongoChatCommand(this));
+        PluginCommand command = getCommand("nihongochat");
+        command.setAliases(Arrays.asList("japanize", "jc"));
+        command.setExecutor(new NihongoChatCommand(this));
 
-        logger.info(getDescription().getName() + "-" +
-                    getDescription().getVersion() + " is enabled!");
+        getServer().getPluginManager().registerEvents(new NihongoChatAsyncPlayerChatListener(this), this);
+
+        logger.info(getDescription().getName() + "-" + getDescription().getVersion() + " is enabled");
     }
 
     public void onDisable() {
         logger.info(getDescription().getName() + " is disabled");
-    }
-
-    public void loadConfig() {
-        File configFile = new File(getDataFolder(), "config.yml");
-
-        try {
-            configFile.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        configHandler = new ConfigHandler(configFile);
     }
 
     public ConfigHandler getConfigHandler() {

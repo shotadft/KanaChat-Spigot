@@ -26,8 +26,6 @@ public class NihongoChatAsyncPlayerChatListener implements Listener {
 
     public NihongoChatAsyncPlayerChatListener(NihongoChat plugin) {
         this.plugin = plugin;
-
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler(priority = EventPriority.LOW)
