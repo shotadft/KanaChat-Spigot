@@ -16,9 +16,7 @@ public class ConfigHandler {
         if (!configFile.exists()) {
             try {
                 configFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            } catch (IOException e) {}
         }
 
         this.config = YamlConfiguration.loadConfiguration(configFile);
