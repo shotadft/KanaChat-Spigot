@@ -1,16 +1,16 @@
-package net.ironingot.nihongochat;
+package net.ironingot.kanachat;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-public class NihongoChatCommand implements CommandExecutor {
-    private NihongoChat plugin;
+public class KanaChatCommand implements CommandExecutor {
+    private KanaChat plugin;
     private String pluginName;
     private String pluginVersion;
 
-    public NihongoChatCommand(NihongoChat plugin){
+    public KanaChatCommand(KanaChat plugin){
         this.plugin = plugin;
         this.pluginName = plugin.getDescription().getName();
         this.pluginVersion = plugin.getDescription().getVersion();

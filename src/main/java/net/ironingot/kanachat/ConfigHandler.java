@@ -1,4 +1,4 @@
-package net.ironingot.nihongochat;
+package net.ironingot.kanachat;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +26,7 @@ public class ConfigHandler {
     }
 
     public void load() {
-        ConfigurationSection section = config.getConfigurationSection("NihongoChat");
+        ConfigurationSection section = config.getConfigurationSection("KanaChat");
 
         if (section != null) {
             for (String key : section.getKeys(false)) {
@@ -55,11 +55,11 @@ public class ConfigHandler {
     }
 
     public Boolean getUserMode(String name) {
-        return (Boolean)config.get("user." + name + ".nihongochat", Boolean.TRUE);
+        return (Boolean)config.get("user." + name + ".kanachat", Boolean.TRUE);
     }
 
     public void setUserMode(String name, Boolean value) {
-        config.set("user." + name + ".nihongochat", value);
+        config.set("user." + name + ".kanachat", value);
         save();
     }
 }

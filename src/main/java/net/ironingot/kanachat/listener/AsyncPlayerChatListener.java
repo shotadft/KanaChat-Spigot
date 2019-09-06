@@ -1,4 +1,4 @@
-package net.ironingot.nihongochat.listener;
+package net.ironingot.kanachat.listener;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -12,11 +12,11 @@ import biscotte.kana.Kana;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.ironingot.nihongochat.NihongoChat;
+import net.ironingot.kanachat.KanaChat;
 import net.ironingot.translator.KanaKanjiTranslator;
 
 public class AsyncPlayerChatListener implements Listener {
-    public final NihongoChat plugin;
+    public final KanaChat plugin;
 
     private static final String excludeMatchString = "[^\u0020-\u007E]|\u00a7|u00a74u00a75u00a73u00a74v|^http|^[A-Z]";
     private static final Pattern excludePattern = Pattern.compile(excludeMatchString);
@@ -24,7 +24,7 @@ public class AsyncPlayerChatListener implements Listener {
     private static final String prefixMatchString = "^([#GLOBAL#|>]+)(.*)";
     private static final Pattern prefixPattern = Pattern.compile(prefixMatchString);
 
-    public AsyncPlayerChatListener(NihongoChat plugin) {
+    public AsyncPlayerChatListener(KanaChat plugin) {
         this.plugin = plugin;
     }
 

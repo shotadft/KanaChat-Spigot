@@ -1,11 +1,14 @@
-name: NihongoChat
+name: KanaChat
+version: 2.0.0
 author: fubira
-main: net.ironingot.nihongochat.NihongoChat
-version: 1.2
+main: net.ironingot.kanachat.KanaChat
+description: Alphabet to Hiragana convert + Kanji Translation
 commands:
-  nihongochat:
-    usage:
-      /<command> [on|off]
-      /<command> translate [on|off]
-      /<command> version
-    description: Alphabet to Hiragana convert + Kanji Translation
+  kanachat:
+    aliases:
+      - japanize
+      - kc
+    usage: |
+      /<command> [on|off] 
+      /<command> kanji [on|off]
+    description: Enable or Disable roma-ji japanese translation
