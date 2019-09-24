@@ -174,6 +174,13 @@ public class Kana
 
         //  System.out.println("buf,tmp:"+buf+","+tmp+","+cnvLine);
         }
+
+        // 最後の1文字が'n'ならば'ん'にする
+        if ( buf.equals("n") ) {
+            cnvLine=cnvLine+R2K(buf,5);
+            buf="";
+        }
+
         cnvLine=cnvLine+buf;
     }
 }

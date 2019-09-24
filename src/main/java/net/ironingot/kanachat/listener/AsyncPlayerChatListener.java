@@ -18,11 +18,14 @@ import net.ironingot.translator.KanaKanjiTranslator;
 public class AsyncPlayerChatListener implements Listener {
     public final KanaChat plugin;
 
-    private static final String excludeMatchString = "[^\u0020-\u007E]|\u00a7|u00a74u00a75u00a73u00a74v|^http|^[A-Z]";
+    private static final String excludeMatchString = "\u00a7|u00a74u00a75u00a73u00a74v|^http";
     private static final Pattern excludePattern = Pattern.compile(excludeMatchString);
 
-    private static final String prefixMatchString = "^([#GLOBAL#|>]+)(.*)";
+    private static final String prefixMatchString = "^(#GLOBAL#|>)(.*)";
     private static final Pattern prefixPattern = Pattern.compile(prefixMatchString);
+
+    private static final String wordMatchString = "([a-z]*)";
+    private static final Pattern wordPattern = Pattern.compile(wordMatchString);
 
     public AsyncPlayerChatListener(KanaChat plugin) {
         this.plugin = plugin;
@@ -34,10 +37,6 @@ public class AsyncPlayerChatListener implements Listener {
         String message = event.getMessage();
 
         if (message.startsWith("/")) {
-            return;
-        }
-
-        if (!message.matches("^[A-Za-z].*")) {
             return;
         }
 
@@ -90,6 +89,12 @@ public class AsyncPlayerChatListener implements Listener {
                 continue;
             }
 
+            Matcher wordMatcher = wordPattern.matcher(word);
+            if (!wordMatcher.matches()) {
+                stringBuilder.append(word);
+                continue;
+            }
+        
             // Roma-Ji -> Hiragana translation
             Kana kana = new Kana();
             kana.setLine(word);
@@ -97,8 +102,18 @@ public class AsyncPlayerChatListener implements Listener {
             String translatedWord = kana.getLine();
 
             // Hiragana -> Kanji translation
-            if (toKanji.equals(Boolean.TRUE) && !translatedWord.matches("^[A-Za-z].*")) {
-                translatedWord = KanaKanjiTranslator.translate(translatedWord);
+            if (toKanji.equals(Boolean.TRUE)) {
+                int wordLength = word.length();
+                int headLength = wordLength < 2 ? wordLength : 2;
+                int footLength = wordLength < 2 ? wordLength : 2;
+
+                if (translatedWord.startsWith(word.substring(0, headLength)) ||
+                    translatedWord.endsWith(word.substring(wordLength - footLength, wordLength))) {
+                    // its not roma-ji may be.
+                    translatedWord = word;
+                } else {
+                    translatedWord = KanaKanjiTranslator.translate(translatedWord);
+                }
             }
 
             stringBuilder.append(translatedWord);
