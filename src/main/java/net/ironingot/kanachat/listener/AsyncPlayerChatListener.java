@@ -24,7 +24,7 @@ public class AsyncPlayerChatListener implements Listener {
     private static final String prefixMatchString = "^(#GLOBAL#|>)(.*)";
     private static final Pattern prefixPattern = Pattern.compile(prefixMatchString);
 
-    private static final String wordMatchString = "([a-z]*)";
+    private static final String wordMatchString = "([a-z0-9 -@]*)";
     private static final Pattern wordPattern = Pattern.compile(wordMatchString);
 
     public AsyncPlayerChatListener(KanaChat plugin) {
