@@ -24,7 +24,7 @@ public class AsyncPlayerChatListener implements Listener {
     private static final String prefixMatchString = "^(#GLOBAL#|>)(.*)";
     private static final Pattern prefixPattern = Pattern.compile(prefixMatchString);
 
-    private static final String wordMatchString = "([a-z0-9 -@]*)";
+    private static final String wordMatchString = "([a-z0-9 -@.,]*)";
     private static final Pattern wordPattern = Pattern.compile(wordMatchString);
 
     public AsyncPlayerChatListener(KanaChat plugin) {
@@ -71,18 +71,15 @@ public class AsyncPlayerChatListener implements Listener {
         }
 
         return stringBuilder.append(dst).append(" ")
-            .append(ChatColor.GRAY).append(src).toString();
+            .append(ChatColor.DARK_GRAY).append(src).toString();
     }
 
     public String translateJapanese(String message, Boolean toKanji)
     {
         StringBuilder stringBuilder = new StringBuilder();
+        boolean isLastTranslated = true;
 
         for (String word: message.split(" ")) {
-            if (stringBuilder.length() > 0) {
-                stringBuilder.append(" ");
-            }
-
             Matcher excludeMatcher = excludePattern.matcher(word);
             if (excludeMatcher.find()) {
                 stringBuilder.append(word);
@@ -91,7 +88,12 @@ public class AsyncPlayerChatListener implements Listener {
 
             Matcher wordMatcher = wordPattern.matcher(word);
             if (!wordMatcher.matches()) {
+                // with blank
+                if (stringBuilder.length() > 0) {
+                    stringBuilder.append(" ");
+                }
                 stringBuilder.append(word);
+                isLastTranslated = false;
                 continue;
             }
         
@@ -111,8 +113,20 @@ public class AsyncPlayerChatListener implements Listener {
                     translatedWord.endsWith(word.substring(wordLength - footLength, wordLength))) {
                     // its not roma-ji may be.
                     translatedWord = word;
+                    
+                    // with blank
+                    if (stringBuilder.length() > 0) {
+                        stringBuilder.append(" ");
+                    }
+                    isLastTranslated = false;
                 } else {
                     translatedWord = KanaKanjiTranslator.translate(translatedWord);
+                    // with out blank in japanese string
+
+                    if (!isLastTranslated) {
+                        stringBuilder.append(" ");
+                    }
+                    isLastTranslated = true;
                 }
             }
 
