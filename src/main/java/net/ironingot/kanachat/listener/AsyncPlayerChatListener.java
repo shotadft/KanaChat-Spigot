@@ -66,7 +66,7 @@ public class AsyncPlayerChatListener implements Listener {
         if (dstMessage.equals(message)) {
             return;
         }
-        event.setMessage(formatMessage(system + space, dstMessage, message));
+        event.setMessage(formatMessage(system, dstMessage, message));
     }
 
     private String formatMessage(String prefix, String dst, String src) {
