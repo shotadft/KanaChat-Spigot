@@ -1,5 +1,8 @@
 package net.ironingot.kanachat.listener;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -8,10 +11,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import biscotte.kana.Kana;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import net.ironingot.kanachat.KanaChat;
 import net.ironingot.translator.KanaKanjiTranslator;
 
@@ -21,7 +20,7 @@ public class AsyncPlayerChatListener implements Listener {
     private static final String excludeMatchString = "\u00a7|u00a74u00a75u00a73u00a74v|^http";
     private static final Pattern excludePattern = Pattern.compile(excludeMatchString);
 
-    private static final String systemMatchString = "^(#GLOBAL#|>)(.*)";
+    private static final String systemMatchString = "^(#GLOBAL#|>)([ ]*)(.*)";
     private static final Pattern systemPattern = Pattern.compile(systemMatchString);
 
     private static final String wordMatchString = "([a-z0-9!-/:-@\\[-`\\{-~]*)";
@@ -40,6 +39,7 @@ public class AsyncPlayerChatListener implements Listener {
     @EventHandler(priority = EventPriority.LOW)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         String system = "";
+        String space = "";
         String message = event.getMessage();
 
         if (message.startsWith("/")) {
@@ -49,7 +49,8 @@ public class AsyncPlayerChatListener implements Listener {
         Matcher systemMatcher = systemPattern.matcher(message);
         if (systemMatcher.find(0)) {
             system = systemMatcher.group(1);
-            message = systemMatcher.group(2);
+            space = systemMatcher.group(2);
+            message = systemMatcher.group(3);
         }
 
         Player player = event.getPlayer();
@@ -65,7 +66,7 @@ public class AsyncPlayerChatListener implements Listener {
         if (dstMessage.equals(message)) {
             return;
         }
-        event.setMessage(formatMessage(system, dstMessage, message));
+        event.setMessage(formatMessage(system + space, dstMessage, message));
     }
 
     private String formatMessage(String prefix, String dst, String src) {
@@ -76,8 +77,9 @@ public class AsyncPlayerChatListener implements Listener {
             stringBuilder.append(prefix).append(" ");
         }
 
-        return stringBuilder.append(dst).append(" ")
-            .append(ChatColor.DARK_GRAY).append(src).toString();
+        return stringBuilder.append(dst)
+            .append(" ").append(ChatColor.DARK_GRAY)
+            .append("(").append(src).append(")").toString();
     }
 
     public String translateJapanese(String message, Boolean toKanji)
@@ -143,7 +145,7 @@ public class AsyncPlayerChatListener implements Listener {
                     isLastTranslated = false;
                 } else {
                     translatedWord = KanaKanjiTranslator.translate(translatedWord);
-                    // with out blank in japanese string
+                    // without blank in japanese string
 
                     if (!isLastTranslated) {
                         stringBuilder.append(" ");
