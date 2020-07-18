@@ -17,7 +17,7 @@ import net.ironingot.translator.KanaKanjiTranslator;
 public class AsyncPlayerChatListener implements Listener {
     public final KanaChat plugin;
 
-    private static final String excludeMatchString = "\u00a7|u00a74u00a75u00a73u00a74v|^http";
+    private static final String excludeMatchString = "\u00a7|u00a74u00a75u00a73u00a74v|^http|^\\.\\/";
     private static final Pattern excludePattern = Pattern.compile(excludeMatchString);
 
     private static final String systemMatchString = "^(#GLOBAL#|>)([ ]*)(.*)";
@@ -29,7 +29,7 @@ public class AsyncPlayerChatListener implements Listener {
     private static final String prefixMatchString = "^([0-9!-/:-@\\[-`\\{-~]+)(.*?)";
     private static final Pattern prefixPattern = Pattern.compile(prefixMatchString);
 
-    private static final String postfixMatchString = "(.*?)([0-9!-/:-@\\[-`\\{-~]+)$";
+    private static final String postfixMatchString = "(.*?)([0-9!-,.-/:-@\\[-`\\{-~]+)$";
     private static final Pattern postfixPattern = Pattern.compile(postfixMatchString);
 
     public AsyncPlayerChatListener(KanaChat plugin) {
@@ -43,6 +43,10 @@ public class AsyncPlayerChatListener implements Listener {
         String message = event.getMessage();
 
         if (message.startsWith("/")) {
+            return;
+        }
+
+        if (message.startsWith(".")) {
             return;
         }
 
