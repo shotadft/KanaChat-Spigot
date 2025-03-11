@@ -6,7 +6,7 @@ import org.apache.commons.collections4.map.PassiveExpiringMap;
 public class KanaKanjiTranslator {
     private static final long EXPIRE_AT = 1000 * 60 * 60 * 24 * 3; // 3days
 
-    private static PassiveExpiringMap<String, String> cache = new PassiveExpiringMap<String, String>(EXPIRE_AT);
+    private static final PassiveExpiringMap<String, String> cache = new PassiveExpiringMap<>(EXPIRE_AT);
 
     public static String translate(String str) {
         String cached = cache.get(str);

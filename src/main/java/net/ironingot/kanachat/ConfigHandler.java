@@ -1,14 +1,14 @@
 package net.ironingot.kanachat;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
+import java.io.IOException;
+
 public class ConfigHandler {
-    private File configFile;
-    private YamlConfiguration config;
+    private final File configFile;
+    private final YamlConfiguration config;
 
     public ConfigHandler(File configFile) {
         this.configFile = configFile;
@@ -16,7 +16,7 @@ public class ConfigHandler {
         if (!configFile.exists()) {
             try {
                 configFile.createNewFile();
-            } catch (IOException e) {}
+            } catch (IOException ignored) {}
         }
 
         this.config = YamlConfiguration.loadConfiguration(configFile);

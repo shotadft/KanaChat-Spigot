@@ -5,10 +5,12 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import javax.annotation.Nonnull;
+
 public class KanaChatCommand implements CommandExecutor {
-    private KanaChat plugin;
-    private String pluginName;
-    private String pluginVersion;
+    private final KanaChat plugin;
+    private final String pluginName;
+    private final String pluginVersion;
 
     public KanaChatCommand(KanaChat plugin){
         this.plugin = plugin;
@@ -16,7 +18,8 @@ public class KanaChatCommand implements CommandExecutor {
         this.pluginVersion = plugin.getDescription().getVersion();
     }
 
-    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+    @Override
+    public boolean onCommand(@Nonnull CommandSender sender, @Nonnull Command cmd, @Nonnull String commandLabel, String[] args) {
         String command;
         String option;
 
@@ -27,37 +30,31 @@ public class KanaChatCommand implements CommandExecutor {
     }
 
     private boolean executeCommand(CommandSender sender, String command, String option) {
-        if (command != null && command.equals("version")) {
-            sender.sendMessage(ChatColor.GOLD + this.pluginName + "-" + this.pluginVersion);
-            return true;
+        switch (command) {
+            case "version" -> {
+                sender.sendMessage(ChatColor.GOLD + this.pluginName + "-" + this.pluginVersion);
+                return true;
+            }
+            case "kanji" -> {
+                if ("on".equals(option) || "true".equals(option)) {
+                    plugin.getConfigHandler().setUserKanjiConversion(sender.getName(), Boolean.TRUE);
+                } else if ("off".equals(option) || "false".equals(option)) {
+                    plugin.getConfigHandler().setUserKanjiConversion(sender.getName(), Boolean.FALSE);
+                }
+
+                if (plugin.getConfigHandler().getUserKanjiConversion(sender.getName())) {
+                    sender.sendMessage(ChatColor.GOLD + pluginName + " Kanji conversion is enabled.");
+                } else {
+                    sender.sendMessage(ChatColor.GOLD + pluginName + " Kanji conversion is disabled.");
+                }
+                return true;
+            }
+            case "on", "true" -> plugin.getConfigHandler().setUserMode(sender.getName(), Boolean.TRUE);
+            case "off", "false" -> plugin.getConfigHandler().setUserMode(sender.getName(), Boolean.FALSE);
+            default -> { return false; }
         }
 
-        if (command != null && command.equals("kanji")) {
-            if (option != null && (option.equals("on") || option.equals("true"))) {
-                plugin.getConfigHandler().setUserKanjiConversion(sender.getName(), Boolean.TRUE);
-            }
-            if (option != null && (option.equals("off") || option.equals("false"))) {
-                plugin.getConfigHandler().setUserKanjiConversion(sender.getName(), Boolean.FALSE);
-            }
-
-            if (plugin.getConfigHandler().getUserKanjiConversion(sender.getName())) {
-                sender.sendMessage(ChatColor.GOLD + pluginName + " Kanji conversion is enabled.");
-            } else {
-                sender.sendMessage(ChatColor.GOLD + pluginName + " Kanji conversion is disabled.");
-            }
-            return true;
-        }
-
-        if (command != null) {
-            if (command.equals("on") || command.equals("true")) {
-                plugin.getConfigHandler().setUserMode(sender.getName(), Boolean.TRUE);
-            }
-            if (command.equals("off") || command.equals("false")) {
-                plugin.getConfigHandler().setUserMode(sender.getName(), Boolean.FALSE);
-            }
-        }
-
-        if (plugin.getConfigHandler().getUserMode(sender.getName()) == Boolean.TRUE) {
+        if (plugin.getConfigHandler().getUserMode(sender.getName())) {
             sender.sendMessage(ChatColor.GOLD + pluginName + " is enabled.");
         } else {
             sender.sendMessage(ChatColor.GOLD + pluginName + " is disabled.");

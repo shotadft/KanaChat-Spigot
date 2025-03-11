@@ -1,8 +1,10 @@
-name: KanaChat
-version: 2.0.5
-author: fubira
+name: 'KanaChat'
+version: '${project.version}'
 main: net.ironingot.kanachat.KanaChat
+api-version: '1.20'
+authors: [ fubira, Shotadft ]
 description: Alphabet to Hiragana convert + Kanji Translation
+website: 'https://github.com/shotadft/KanaChat'
 commands:
   kanachat:
     aliases:

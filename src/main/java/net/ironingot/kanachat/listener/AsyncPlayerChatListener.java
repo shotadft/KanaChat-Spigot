@@ -1,8 +1,8 @@
 package net.ironingot.kanachat.listener;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import biscotte.kana.Kana;
+import net.ironingot.kanachat.KanaChat;
+import net.ironingot.translator.KanaKanjiTranslator;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,17 +10,14 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import biscotte.kana.Kana;
-import net.ironingot.kanachat.KanaChat;
-import net.ironingot.translator.KanaKanjiTranslator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class AsyncPlayerChatListener implements Listener {
-    public final KanaChat plugin;
-
-    private static final String excludeMatchString = "\u00a7|u00a74u00a75u00a73u00a74v|^http|^\\.\\/";
+public record AsyncPlayerChatListener(KanaChat plugin) implements Listener {
+    private static final String excludeMatchString = "§|u00a74u00a75u00a73u00a74v|^http|^\\./";
     private static final Pattern excludePattern = Pattern.compile(excludeMatchString);
 
-    private static final String systemMatchString = "^(#GLOBAL#|>)([ ]*)(.*)";
+    private static final String systemMatchString = "^(#GLOBAL#|>)( *)(.*)";
     private static final Pattern systemPattern = Pattern.compile(systemMatchString);
 
     private static final String wordMatchString = "([a-z0-9!-/:-@\\[-`\\{-~]*)";
@@ -32,11 +29,7 @@ public class AsyncPlayerChatListener implements Listener {
     private static final String postfixMatchString = "(.*?)([0-9!-,.-/:-@\\[-`\\{-~]+)$";
     private static final Pattern postfixPattern = Pattern.compile(postfixMatchString);
 
-    public AsyncPlayerChatListener(KanaChat plugin) {
-        this.plugin = plugin;
-    }
-
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         String system = "";
         String space = "";
@@ -61,7 +54,7 @@ public class AsyncPlayerChatListener implements Listener {
         Boolean toKana = plugin.getConfigHandler().getUserMode(player.getName());
         Boolean toKanji = plugin.getConfigHandler().getUserKanjiConversion(player.getName());
 
-        if (toKana.equals(Boolean.FALSE)) {
+        if (!toKana) {
             return;
         }
 
@@ -82,16 +75,15 @@ public class AsyncPlayerChatListener implements Listener {
         }
 
         return stringBuilder.append(dst)
-            .append(" ").append(ChatColor.DARK_GRAY)
-            .append("(").append(src).append(")").toString();
+                .append(" ").append(ChatColor.DARK_GRAY)
+                .append("(").append(src).append(")").toString();
     }
 
-    public String translateJapanese(String message, Boolean toKanji)
-    {
+    public String translateJapanese(String message, Boolean toKanji) {
         StringBuilder stringBuilder = new StringBuilder();
         boolean isLastTranslated = true;
 
-        for (String word: message.split(" ")) {
+        for (String word : message.split(" ")) {
             Matcher excludeMatcher = excludePattern.matcher(word);
             if (excludeMatcher.find()) {
                 stringBuilder.append(word);
@@ -116,7 +108,7 @@ public class AsyncPlayerChatListener implements Listener {
                 prefix = prefixMatcher.group(1);
                 word = prefixMatcher.group(2);
             }
-        
+
             // find postfix signs
             Matcher postfixMatcher = postfixPattern.matcher(word);
             String postfix = "";
@@ -124,7 +116,7 @@ public class AsyncPlayerChatListener implements Listener {
                 word = postfixMatcher.group(1);
                 postfix = postfixMatcher.group(2);
             }
-        
+
             // Roma-Ji -> Hiragana translation
             Kana kana = new Kana();
             kana.setLine(word);
@@ -132,16 +124,16 @@ public class AsyncPlayerChatListener implements Listener {
             String translatedWord = kana.getLine();
 
             // Hiragana -> Kanji translation
-            if (toKanji.equals(Boolean.TRUE)) {
+            if (toKanji) {
                 int wordLength = word.length();
-                int headLength = wordLength < 2 ? wordLength : 2;
-                int footLength = wordLength < 2 ? wordLength : 2;
+                int headLength = Math.min(wordLength, 2);
+                int footLength = Math.min(wordLength, 2);
 
                 if (translatedWord.startsWith(word.substring(0, headLength)) ||
-                    translatedWord.endsWith(word.substring(wordLength - footLength, wordLength))) {
-                    // its not roma-ji may be.
+                        translatedWord.endsWith(word.substring(wordLength - footLength, wordLength))) {
+                    // it's not roma-ji may be.
                     translatedWord = word;
-                    
+
                     // with blank
                     if (stringBuilder.length() > 0) {
                         stringBuilder.append(" ");
@@ -158,7 +150,7 @@ public class AsyncPlayerChatListener implements Listener {
                 }
             }
 
-            stringBuilder.append(prefix + translatedWord + postfix);
+            stringBuilder.append(prefix).append(translatedWord).append(postfix);
         }
 
         return stringBuilder.toString();

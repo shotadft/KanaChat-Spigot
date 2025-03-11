@@ -1,13 +1,13 @@
 package net.ironingot.kanachat;
 
-import org.bukkit.plugin.java.JavaPlugin;
+import net.ironingot.kanachat.listener.AsyncPlayerChatListener;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.logging.Logger;
 import java.util.Arrays;
-
-import net.ironingot.kanachat.listener.AsyncPlayerChatListener;
+import java.util.Objects;
+import java.util.logging.Logger;
 
 public class KanaChat extends JavaPlugin {
     public static final Logger logger = Logger.getLogger("Minecraft");
@@ -17,7 +17,7 @@ public class KanaChat extends JavaPlugin {
         this.configHandler = new ConfigHandler(new File(this.getDataFolder(), "config.yml"));
 
         PluginCommand command = getCommand("kanachat");
-        command.setAliases(Arrays.asList("japanize", "jc"));
+        Objects.requireNonNull(command).setAliases(Arrays.asList("japanize", "jc"));
         command.setExecutor(new KanaChatCommand(this));
 
         getServer().getPluginManager().registerEvents(new AsyncPlayerChatListener(this), this);

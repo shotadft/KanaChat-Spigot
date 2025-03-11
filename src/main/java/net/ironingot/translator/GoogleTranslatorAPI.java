@@ -1,53 +1,52 @@
 package net.ironingot.translator;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+
 public class GoogleTranslatorAPI {
-    private static final String baseURL = "http://www.google.com/transliterate";
+    private static final String baseURL = "https://www.google.com/transliterate";
     private static final String from = "ja-Hira";
     private static final String to = "ja";
-    private static final String codec = "UTF-8";
+    private static final Charset codec = StandardCharsets.UTF_8;
+
+    private static final HttpClient client = HttpClient.newHttpClient();
 
     private static String makeURLString(String text) {
         return baseURL + "?langpair=" + from + "|" + to + "&text=" + text;
     }
 
     public static String translate(String text) {
-        String result = text;
-        try {
-            String encodedText = URLEncoder.encode(text, codec);
-            String response = callWebAPI(makeURLString(encodedText));
-            result = pickupFirstCandidate(response);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        String result;
+        String encodedText = URLEncoder.encode(text, codec);
+        String response = callWebAPI(makeURLString(encodedText));
+        result = pickupFirstCandidate(response);
         return result;
-   }
+    }
 
-   private static String pickupFirstCandidate(String response) {
+    private static String pickupFirstCandidate(String response) {
         StringBuilder stringBuilder = new StringBuilder();
         JSONParser parser = new JSONParser();
 
         try {
             JSONArray responseArray = (JSONArray)parser.parse(response);
 
-            for (int id = 0; id < responseArray.size(); id++) {
+            for (Object o : responseArray) {
                 String partString = "";
                 try {
-                    JSONArray partArray = (JSONArray)responseArray.get(id);
-                    partString = (String)partArray.get(0);
-                    partString = (String)((JSONArray)partArray.get(1)).get(0);
+                    JSONArray partArray = (JSONArray) o;
+                    partString = (String) partArray.get(0);
+                    partString = (String) ((JSONArray) partArray.get(1)).getFirst();
                 } catch (IndexOutOfBoundsException e) {
                     e.printStackTrace();
                 }
@@ -60,38 +59,23 @@ public class GoogleTranslatorAPI {
     }
 
     private static String callWebAPI(String urlString) {
-        HttpURLConnection connection = null;
-        BufferedReader bufferedReader = null;
         StringBuilder stringBuilder = new StringBuilder();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(urlString))
+                .GET()
+                .header("User-Agent", "Java SE HttpClient")
+                .timeout(Duration.ofMillis(5000))
+                .build();
 
         try {
-            URL url = new URL(urlString);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.connect();
-
-            bufferedReader =
-                new BufferedReader(new InputStreamReader(connection.getInputStream(), codec));
-
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                stringBuilder.append(line);
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+                return "";
             }
-        } catch (MalformedURLException e) {
+
+            stringBuilder.append(response.body());
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (bufferedReader != null) {
-                    bufferedReader.close();
-                }
-            } catch (IOException e) {
-            }
-
-            if (connection != null) {
-                connection.disconnect();
-            }
         }
 
         return stringBuilder.toString();
