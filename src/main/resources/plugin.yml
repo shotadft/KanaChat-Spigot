@@ -3,8 +3,8 @@ version: '${project.version}'
 main: net.ironingot.kanachat.KanaChat
 api-version: '1.20'
 authors: [ fubira, Shotadft ]
-description: Alphabet to Hiragana convert + Kanji Translation
-website: 'https://github.com/shotadft/KanaChat'
+description: 'Alphabet to Hiragana convert + Kanji Translation'
+website: 'https://github.com/shotadft/KanaChat-Spigot'
 commands:
   kanachat:
     aliases:
@@ -13,4 +13,4 @@ commands:
     usage: |
       /<command> [on|off] 
       /<command> kanji [on|off]
-    description: Enable or Disable roma-ji japanese translation
+    description: 'Enable or Disable roma-ji japanese translation'

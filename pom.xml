@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
 
     <name>KanaChat</name>
-    <url>https://github.com/shotadft/KanaChat</url>
+    <url>https://github.com/shotadft/KanaChat-Spigot</url>
 
     <properties>
         <java.version>21</java.version>
