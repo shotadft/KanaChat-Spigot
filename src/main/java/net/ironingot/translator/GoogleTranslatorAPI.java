@@ -4,12 +4,17 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
@@ -17,11 +22,10 @@ public class GoogleTranslatorAPI {
     private static final String baseURL = "https://www.google.com/transliterate";
     private static final String from = "ja-Hira";
     private static final String to = "ja";
-
-    private static final HttpClient client = HttpClient.newHttpClient();
+    private static final Charset codec = StandardCharsets.UTF_8;
 
     private static String makeURLString(String text) {
-        String encodedText = URLEncoder.encode(text, StandardCharsets.UTF_8);
+        String encodedText = URLEncoder.encode(text, codec);
         return baseURL + "?langpair=" + from + "%7C" + to + "&text=" + encodedText;
     }
 
@@ -54,22 +58,37 @@ public class GoogleTranslatorAPI {
     }
 
     private static String callWebAPI(String urlString) {
+        HttpURLConnection connection = null;
+        BufferedReader bufferedReader = null;
         StringBuilder stringBuilder = new StringBuilder();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(urlString))
-                .GET()
-                .header("Accept", "text/plain")
-                .header("User-Agent", "Java SE HttpClient")
-                .timeout(Duration.ofMillis(5000))
-                .build();
 
         try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() == 200) {
-                stringBuilder.append(response.body());
+            URI uri = URI.create(urlString);
+            connection = (HttpURLConnection) uri.toURL().openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Accept", "text/plain");
+            connection.setConnectTimeout(5000);
+            connection.connect();
+
+            bufferedReader =
+                    new BufferedReader(new InputStreamReader(connection.getInputStream(), codec));
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuilder.append(line);
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (bufferedReader != null) {
+                    bufferedReader.close();
+                }
+            } catch (IOException ignored) {}
+
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
 
         return stringBuilder.toString();
