@@ -18,20 +18,17 @@ public class GoogleTranslatorAPI {
     private static final String baseURL = "https://www.google.com/transliterate";
     private static final String from = "ja-Hira";
     private static final String to = "ja";
-    private static final Charset codec = StandardCharsets.UTF_8;
 
     private static final HttpClient client = HttpClient.newHttpClient();
 
     private static String makeURLString(String text) {
-        return baseURL + "?langpair=" + from + "|" + to + "&text=" + text;
+        String encodedText = URLEncoder.encode(text, StandardCharsets.UTF_8);
+        return baseURL + "?langpair=" + from + "%7C" + to + "&text=" + encodedText;
     }
 
     public static String translate(String text) {
-        String result;
-        String encodedText = URLEncoder.encode(text, codec);
-        String response = callWebAPI(makeURLString(encodedText));
-        result = pickupFirstCandidate(response);
-        return result;
+        String response = callWebAPI(makeURLString(text));
+        return pickupFirstCandidate(response);
     }
 
     private static String pickupFirstCandidate(String response) {
@@ -62,17 +59,16 @@ public class GoogleTranslatorAPI {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(urlString))
                 .GET()
+                .header("Accept", "text/plain")
                 .header("User-Agent", "Java SE HttpClient")
                 .timeout(Duration.ofMillis(5000))
                 .build();
 
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() != 200) {
-                return "";
+            if (response.statusCode() == 200) {
+                stringBuilder.append(response.body());
             }
-
-            stringBuilder.append(response.body());
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
