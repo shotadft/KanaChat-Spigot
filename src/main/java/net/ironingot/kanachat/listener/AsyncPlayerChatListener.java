@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public record AsyncPlayerChatListener(KanaChat plugin) implements Listener {
-    private static final String excludeMatchString = "§|u00a74u00a75u00a73u00a74v|^http|^\\./";
+    private static final String excludeMatchString = "§|u00a74u00a75u00a73u00a74v|^(https?|ftp)://|^\\./";
     private static final Pattern excludePattern = Pattern.compile(excludeMatchString);
 
     private static final String systemMatchString = "^(#GLOBAL#|>)( *)(.*)";
@@ -29,17 +29,13 @@ public record AsyncPlayerChatListener(KanaChat plugin) implements Listener {
     private static final String postfixMatchString = "(.*?)([0-9!-,.-/:-@\\[-`\\{-~]+)$";
     private static final Pattern postfixPattern = Pattern.compile(postfixMatchString);
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.LOW)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         String system = "";
         String space = "";
         String message = event.getMessage();
 
-        if (message.startsWith("/")) {
-            return;
-        }
-
-        if (message.startsWith(".")) {
+        if (message.startsWith("/") || message.startsWith(".")) {
             return;
         }
 
