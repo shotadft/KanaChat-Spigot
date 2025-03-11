@@ -1,8 +1,8 @@
 package net.ironingot.translator;
 
-import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.IOException;
 import java.net.URI;
@@ -36,23 +36,22 @@ public class GoogleTranslatorAPI {
 
     private static String pickupFirstCandidate(String response) {
         StringBuilder stringBuilder = new StringBuilder();
-        JSONParser parser = new JSONParser();
 
         try {
-            JSONArray responseArray = (JSONArray)parser.parse(response);
+            JsonArray responseArray = JsonParser.parseString(response).getAsJsonArray();
 
             for (Object o : responseArray) {
                 String partString = "";
                 try {
-                    JSONArray partArray = (JSONArray) o;
-                    partString = (String) partArray.get(0);
-                    partString = (String) ((JSONArray) partArray.get(1)).getFirst();
+                    JsonArray partArray = (JsonArray) o;
+                    partString = partArray.get(0).getAsString();
+                    partString = partArray.get(1).getAsJsonArray().get(0).getAsString();
                 } catch (IndexOutOfBoundsException e) {
                     e.printStackTrace();
                 }
                 stringBuilder.append(partString);
             }
-        } catch (ParseException e) {
+        } catch (JsonSyntaxException e) {
             e.printStackTrace();
         }
         return stringBuilder.toString();
