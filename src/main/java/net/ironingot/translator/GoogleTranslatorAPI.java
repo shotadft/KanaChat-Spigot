@@ -62,6 +62,7 @@ public class GoogleTranslatorAPI {
             connection = (HttpURLConnection) uri.toURL().openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", "text/plain");
+            connection.setRequestProperty("User-Agent", "Java SE HttpClient");
             connection.setConnectTimeout(5000);
             connection.connect();
 
