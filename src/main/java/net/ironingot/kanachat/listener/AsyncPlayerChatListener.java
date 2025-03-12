@@ -32,7 +32,7 @@ public record AsyncPlayerChatListener(KanaChat plugin) implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         String system = "";
-        String space = "";
+        //String space = "";
         String message = event.getMessage();
 
         if (message.startsWith("/") || message.startsWith(".")) {
@@ -42,7 +42,7 @@ public record AsyncPlayerChatListener(KanaChat plugin) implements Listener {
         Matcher systemMatcher = systemPattern.matcher(message);
         if (systemMatcher.find(0)) {
             system = systemMatcher.group(1);
-            space = systemMatcher.group(2);
+            //space = systemMatcher.group(2);
             message = systemMatcher.group(3);
         }
 
