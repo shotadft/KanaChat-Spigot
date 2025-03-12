@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 public class ConfigHandler {
     private final File configFile;
@@ -37,7 +38,7 @@ public class ConfigHandler {
 
     public void save() {
         try {
-            config.save(configFile);
+            Objects.requireNonNull(config).save(configFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
