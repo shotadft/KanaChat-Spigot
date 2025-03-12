@@ -1,11 +1,10 @@
-package net.ironingot.kanachat;
+package net.ironingot.kanachat.command;
 
+import net.ironingot.kanachat.KanaChat;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-
-import javax.annotation.Nonnull;
 
 public class KanaChatCommand implements CommandExecutor {
     private final KanaChat plugin;
@@ -19,7 +18,7 @@ public class KanaChatCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(@Nonnull CommandSender sender, @Nonnull Command cmd, @Nonnull String commandLabel, String[] args) {
+    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         String command;
         String option;
 
@@ -36,10 +35,10 @@ public class KanaChatCommand implements CommandExecutor {
                 return true;
             }
             case "kanji" -> {
-                if ("on".equals(option) || "true".equals(option)) {
-                    plugin.setUserKanjiConversion(sender.getName(), true);
-                } else if ("off".equals(option) || "false".equals(option)) {
-                    plugin.setUserKanjiConversion(sender.getName(), false);
+                switch (option) {
+                    case "on", "true" -> plugin.setUserKanjiConversion(sender.getName(), true);
+                    case "off", "false" -> plugin.setUserKanjiConversion(sender.getName(), false);
+                    case null, default -> { return false; }
                 }
 
                 if (plugin.getUserKanjiConversion(sender.getName())) {
@@ -51,7 +50,7 @@ public class KanaChatCommand implements CommandExecutor {
             }
             case "on", "true" -> plugin.setUserMode(sender.getName(), true);
             case "off", "false" -> plugin.setUserMode(sender.getName(), false);
-            default -> { return false; }
+            case null, default -> { return false; }
         }
 
         if (plugin.getUserMode(sender.getName())) {
