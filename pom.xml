@@ -6,7 +6,7 @@
 
     <groupId>net.ironingot</groupId>
     <artifactId>KanaChat</artifactId>
-    <version>2.0.5-Spigot</version>
+    <version>2.0.6-Spigot</version>
     <packaging>jar</packaging>
 
     <name>KanaChat</name>
