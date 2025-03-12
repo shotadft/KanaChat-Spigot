@@ -4,17 +4,15 @@ import net.ironingot.kanachat.listener.AsyncPlayerChatListener;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.logging.Logger;
 
 public class KanaChat extends JavaPlugin {
     public static final Logger logger = Logger.getLogger("Minecraft");
-    private ConfigHandler configHandler;
 
     public void onEnable() {
-        this.configHandler = new ConfigHandler(new File(this.getDataFolder(), "config.yml"));
+        saveDefaultConfig();
 
         PluginCommand command = getCommand("kanachat");
         Objects.requireNonNull(command).setAliases(Arrays.asList("japanize", "jc"));
@@ -29,7 +27,21 @@ public class KanaChat extends JavaPlugin {
         logger.info(getDescription().getName() + " is disabled");
     }
 
-    public ConfigHandler getConfigHandler() {
-        return configHandler;
+    public Boolean getUserKanjiConversion(String name) {
+        return getConfig().getBoolean("user." + name + ".kanji", true);
+    }
+
+    public void setUserKanjiConversion(String name, Boolean value) {
+        getConfig().set("user." + name + ".kanji", value);
+        saveConfig();
+    }
+
+    public Boolean getUserMode(String name) {
+        return getConfig().getBoolean("user." + name + ".kanachat", true);
+    }
+
+    public void setUserMode(String name, Boolean value) {
+        getConfig().set("user." + name + ".kanachat", value);
+        saveConfig();
     }
 }

@@ -47,8 +47,8 @@ public record AsyncPlayerChatListener(KanaChat plugin) implements Listener {
         }
 
         Player player = event.getPlayer();
-        Boolean toKana = plugin.getConfigHandler().getUserMode(player.getName());
-        Boolean toKanji = plugin.getConfigHandler().getUserKanjiConversion(player.getName());
+        Boolean toKana = plugin.getUserMode(player.getName());
+        Boolean toKanji = plugin.getUserKanjiConversion(player.getName());
 
         if (!toKana) {
             return;

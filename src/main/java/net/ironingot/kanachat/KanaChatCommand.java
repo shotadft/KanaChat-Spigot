@@ -37,24 +37,24 @@ public class KanaChatCommand implements CommandExecutor {
             }
             case "kanji" -> {
                 if ("on".equals(option) || "true".equals(option)) {
-                    plugin.getConfigHandler().setUserKanjiConversion(sender.getName(), Boolean.TRUE);
+                    plugin.setUserKanjiConversion(sender.getName(), true);
                 } else if ("off".equals(option) || "false".equals(option)) {
-                    plugin.getConfigHandler().setUserKanjiConversion(sender.getName(), Boolean.FALSE);
+                    plugin.setUserKanjiConversion(sender.getName(), false);
                 }
 
-                if (plugin.getConfigHandler().getUserKanjiConversion(sender.getName())) {
+                if (plugin.getUserKanjiConversion(sender.getName())) {
                     sender.sendMessage(ChatColor.GOLD + pluginName + " Kanji conversion is enabled.");
                 } else {
                     sender.sendMessage(ChatColor.GOLD + pluginName + " Kanji conversion is disabled.");
                 }
                 return true;
             }
-            case "on", "true" -> plugin.getConfigHandler().setUserMode(sender.getName(), Boolean.TRUE);
-            case "off", "false" -> plugin.getConfigHandler().setUserMode(sender.getName(), Boolean.FALSE);
+            case "on", "true" -> plugin.setUserMode(sender.getName(), true);
+            case "off", "false" -> plugin.setUserMode(sender.getName(), false);
             default -> { return false; }
         }
 
-        if (plugin.getConfigHandler().getUserMode(sender.getName())) {
+        if (plugin.getUserMode(sender.getName())) {
             sender.sendMessage(ChatColor.GOLD + pluginName + " is enabled.");
         } else {
             sender.sendMessage(ChatColor.GOLD + pluginName + " is disabled.");
