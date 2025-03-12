@@ -20,6 +20,9 @@ public record AsyncPlayerChatListener(KanaChat plugin) implements Listener {
     private static final String wordMatchString = "([a-z0-9!-/:-@\\[-`\\{-~]*)";
     private static final Pattern wordPattern = Pattern.compile(wordMatchString);
 
+    private static final String systemMatchString = "^(#GLOBAL#|>)( *)(.*)";
+    private static final Pattern systemPattern = Pattern.compile(systemMatchString);
+
     private static final String prefixMatchString = "^([0-9!-/:-@\\[-`\\{-~]+)(.*?)";
     private static final Pattern prefixPattern = Pattern.compile(prefixMatchString);
 
@@ -28,10 +31,19 @@ public record AsyncPlayerChatListener(KanaChat plugin) implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
+        String system = "";
+        String space = "";
         String message = event.getMessage();
 
         if (message.startsWith("/") || message.startsWith(".")) {
             return;
+        }
+
+        Matcher systemMatcher = systemPattern.matcher(message);
+        if (systemMatcher.find(0)) {
+            system = systemMatcher.group(1);
+            space = systemMatcher.group(2);
+            message = systemMatcher.group(3);
         }
 
         Player player = event.getPlayer();
@@ -48,11 +60,20 @@ public record AsyncPlayerChatListener(KanaChat plugin) implements Listener {
             return;
         }
 
-        event.setMessage(formatMessage(dstMessage, message));
+        event.setMessage(formatMessage(system, dstMessage, message));
     }
 
-    private String formatMessage(String dst, String src) {
-        return dst + " " + ChatColor.DARK_GRAY + "(" + src + ")";
+    private String formatMessage(String prefix, String dst, String src) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        // [Prefix] <Converted Message> <Source Message>
+        if (!prefix.isEmpty()) {
+            stringBuilder.append(prefix).append(" ");
+        }
+
+        return stringBuilder.append(dst)
+                .append(" ").append(ChatColor.DARK_GRAY)
+                .append("(").append(src).append(")").toString();
     }
 
     public String translateJapanese(String message, Boolean toKanji) {
