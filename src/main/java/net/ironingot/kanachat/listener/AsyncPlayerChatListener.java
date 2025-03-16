@@ -13,6 +13,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@SuppressWarnings("UnusedAssignment")
 public record AsyncPlayerChatListener(KanaChat plugin) implements Listener {
     private static final String excludeMatchString = "§|u00a74u00a75u00a73u00a74v|^(https?|ftp)://|^\\./";
     private static final Pattern excludePattern = Pattern.compile(excludeMatchString);
@@ -29,10 +30,10 @@ public record AsyncPlayerChatListener(KanaChat plugin) implements Listener {
     private static final String postfixMatchString = "(.*?)([0-9!-,.-/:-@\\[-`\\{-~]+)$";
     private static final Pattern postfixPattern = Pattern.compile(postfixMatchString);
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.LOW)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         String system = "";
-        //String space = "";
+        String space = "";
         String message = event.getMessage();
 
         if (message.startsWith("/") || message.startsWith(".")) {
@@ -42,7 +43,7 @@ public record AsyncPlayerChatListener(KanaChat plugin) implements Listener {
         Matcher systemMatcher = systemPattern.matcher(message);
         if (systemMatcher.find(0)) {
             system = systemMatcher.group(1);
-            //space = systemMatcher.group(2);
+            space = systemMatcher.group(2);
             message = systemMatcher.group(3);
         }
 

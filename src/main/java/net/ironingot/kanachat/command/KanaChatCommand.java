@@ -5,17 +5,22 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import javax.annotation.Nonnull;
 
 public record KanaChatCommand(KanaChat plugin) implements CommandExecutor {
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        String command;
-        String option;
+    public boolean onCommand(@Nonnull CommandSender sender, @Nonnull Command cmd, @Nonnull String commandLabel, @Nonnull String[] args) {
+        if (sender instanceof Player && ((Player) sender).isOnline()) {
+            String command;
+            String option;
 
-        command = (args.length >= 1) ? args[0].toLowerCase() : "get";
-        option  = (args.length >= 2) ? args[1].toLowerCase() : null;
+            command = (args.length >= 1) ? args[0].toLowerCase() : "get";
+            option = (args.length >= 2) ? args[1].toLowerCase() : null;
 
-        return executeCommand(sender, command, option);
+            return executeCommand(sender, command, option);
+        } else return false;
     }
 
     private boolean executeCommand(CommandSender sender, String command, String option) {
