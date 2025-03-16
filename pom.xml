@@ -61,7 +61,6 @@
                     <artifactSet>
                         <includes>
                             <include>org.apache.commons:*</include>
-                            <include>com.google.code.gson:*</include>
                         </includes>
                     </artifactSet>
                     <relocations>
