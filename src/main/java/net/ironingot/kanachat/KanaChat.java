@@ -12,7 +12,9 @@ import java.util.logging.Logger;
 
 public class KanaChat extends JavaPlugin {
     public static final Logger logger = Logger.getLogger("Minecraft");
+    private final ConfigHandler configHandler = new ConfigHandler(this);
 
+    @Override
     public void onEnable() {
         saveDefaultConfig();
 
@@ -26,26 +28,13 @@ public class KanaChat extends JavaPlugin {
         logger.info(getDescription().getName() + "-" + getDescription().getVersion() + " is enabled");
     }
 
+    @Override
     public void onDisable() {
         saveConfig();
         logger.info(getDescription().getName() + " is disabled");
     }
 
-    public Boolean getUserKanjiConversion(String name) {
-        return getConfig().getBoolean("user." + name + ".kanji", true);
-    }
-
-    public void setUserKanjiConversion(String name, Boolean value) {
-        getConfig().set("user." + name + ".kanji", value);
-        saveConfig();
-    }
-
-    public Boolean getUserMode(String name) {
-        return getConfig().getBoolean("user." + name + ".kanachat", true);
-    }
-
-    public void setUserMode(String name, Boolean value) {
-        getConfig().set("user." + name + ".kanachat", value);
-        saveConfig();
+    public ConfigHandler getConfigHandler() {
+        return configHandler;
     }
 }

@@ -6,17 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-public class KanaChatCommand implements CommandExecutor {
-    private final KanaChat plugin;
-    private final String pluginName;
-    private final String pluginVersion;
-
-    public KanaChatCommand(KanaChat plugin){
-        this.plugin = plugin;
-        this.pluginName = plugin.getDescription().getName();
-        this.pluginVersion = plugin.getDescription().getVersion();
-    }
-
+public record KanaChatCommand(KanaChat plugin) implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         String command;
@@ -29,31 +19,34 @@ public class KanaChatCommand implements CommandExecutor {
     }
 
     private boolean executeCommand(CommandSender sender, String command, String option) {
+        String pluginName = plugin.getDescription().getName();
+        String pluginVersion = plugin.getDescription().getVersion();
+
         switch (command) {
             case "version" -> {
-                sender.sendMessage(ChatColor.GOLD + this.pluginName + "-" + this.pluginVersion);
+                sender.sendMessage(ChatColor.GOLD + pluginName + "-" + pluginVersion);
                 return true;
             }
             case "kanji" -> {
                 switch (option) {
-                    case "on", "true" -> plugin.setUserKanjiConversion(sender.getName(), true);
-                    case "off", "false" -> plugin.setUserKanjiConversion(sender.getName(), false);
+                    case "on", "true" -> plugin.getConfigHandler().setUserKanjiConversion(sender.getName(), Boolean.TRUE);
+                    case "off", "false" -> plugin.getConfigHandler().setUserKanjiConversion(sender.getName(), Boolean.FALSE);
                     case null, default -> { return false; }
                 }
 
-                if (plugin.getUserKanjiConversion(sender.getName())) {
+                if (plugin.getConfigHandler().getUserKanjiConversion(sender.getName())) {
                     sender.sendMessage(ChatColor.GOLD + pluginName + " Kanji conversion is enabled.");
                 } else {
                     sender.sendMessage(ChatColor.GOLD + pluginName + " Kanji conversion is disabled.");
                 }
                 return true;
             }
-            case "on", "true" -> plugin.setUserMode(sender.getName(), true);
-            case "off", "false" -> plugin.setUserMode(sender.getName(), false);
+            case "on", "true" -> plugin.getConfigHandler().setUserMode(sender.getName(), Boolean.TRUE);
+            case "off", "false" -> plugin.getConfigHandler().setUserMode(sender.getName(), Boolean.FALSE);
             case null, default -> { return false; }
         }
 
-        if (plugin.getUserMode(sender.getName())) {
+        if (plugin.getConfigHandler().getUserMode(sender.getName())) {
             sender.sendMessage(ChatColor.GOLD + pluginName + " is enabled.");
         } else {
             sender.sendMessage(ChatColor.GOLD + pluginName + " is disabled.");
