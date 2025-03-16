@@ -5,7 +5,7 @@ import org.apache.commons.collections4.map.PassiveExpiringMap;
 import java.util.concurrent.TimeUnit;
 
 public class KanaKanjiTranslator {
-    private static final long EXPIRE_AT = TimeUnit.DAYS.toMillis(3); // 3days
+    private static final long EXPIRE_AT = TimeUnit.DAYS.toMillis(3L);
 
     private static final PassiveExpiringMap<String, String> cache = new PassiveExpiringMap<>(EXPIRE_AT);
 
